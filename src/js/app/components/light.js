@@ -37,11 +37,6 @@ export default class Light {
     this.directionalLight.shadow.mapSize.width = Config.shadow.mapWidth;
     this.directionalLight.shadow.mapSize.height = Config.shadow.mapHeight;
 
-    // Shadow camera helper
-    if(Config.isDev) {
-      this.directionalLightHelper = new THREE.CameraHelper(this.directionalLight.shadow.camera);
-      this.directionalLightHelper.visible = Config.shadow.helperEnabled;
-    }
     // Hemisphere light
     this.hemiLight = new THREE.HemisphereLight(Config.hemiLight.color, Config.hemiLight.groundColor, Config.hemiLight.intensity);
     this.hemiLight.position.set(Config.hemiLight.x, Config.hemiLight.y, Config.hemiLight.z);
@@ -56,9 +51,6 @@ export default class Light {
 
       case 'directional':
         this.scene.add(this.directionalLight);
-        if(Config.isDev) {
-          this.scene.add(this.directionalLightHelper);
-        }
         break;
 
       case 'point':

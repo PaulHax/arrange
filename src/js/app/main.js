@@ -10,20 +10,13 @@ import Light from './components/light';
 import Controls from './components/controls';
 import Geometry from './components/geometry';
 
-// Helpers
-import Stats from './helpers/stats';
-import MeshHelper from './helpers/meshHelper';
-
-// Model
-import Texture from './model/texture';
-import Model from './model/model';
-
 // Managers
 import Interaction from './managers/interaction';
 import DatGUI from './managers/datGUI';
 
 // data
 import Config from './../data/config';
+import FurnitureStack from './components/furnitureStack';
 // -- End of imports
 
 // This class instantiates and ties all of the components together, starts the loading process and renders the main loop
@@ -59,71 +52,30 @@ export default class Main {
     // Create and place geo in scene
     this.geometry = new Geometry(this.scene);
     this.geometry.make('plane')(150, 150, 10, 10);
-    this.geometry.place([0, -20, 0], [Math.PI / 2, 0, 0]);
-
-    // Set up rStats if dev environment
-    if(Config.isDev && Config.isShowingStats) {
-      this.stats = new Stats(this.renderer);
-      this.stats.setUp();
-    }
-
+    this.geometry.place([0, 0, 0], [Math.PI / 2, 0, 0]);    
+    
+    const stack = new FurnitureStack(this.scene, this.camera)
     // Set up gui
     if (Config.isDev) {
-      this.gui = new DatGUI(this)
+      this.gui = new DatGUI(stack)
     }
-
-    // Instantiate texture class
-    this.texture = new Texture();
-
-    // Start loading the textures and then go on to load the model after the texture Promises have resolved
-    this.texture.load().then(() => {
-      this.manager = new THREE.LoadingManager();
-
-      // Textures loaded, load model
-      this.model = new Model(this.scene, this.manager, this.texture.textures);
-      this.model.load(Config.models[Config.model.selected].type);
-
-      // onProgress callback
-      this.manager.onProgress = (item, loaded, total) => {
-        console.log(`${item}: ${loaded} ${total}`);
-      };
-
-      // All loaders done now
-      this.manager.onLoad = () => {
-        // Set up interaction manager with the app now that the model is finished loading
-        new Interaction(this.renderer.threeRenderer, this.scene, this.camera.threeCamera, this.controls.threeControls);
-
-        // Add dat.GUI controls if dev
-        if(Config.isDev) {
-          this.meshHelper = new MeshHelper(this.scene, this.model.obj);
-          if (Config.mesh.enableHelper) this.meshHelper.enable();
-
-          this.gui.load(this, this.model.obj);
-        }
-
-        // Everything is now fully loaded
-        Config.isLoaded = true;
-        this.container.querySelector('#loading').style.display = 'none';
-      };
-    });
+    
+    new Interaction(this.renderer.threeRenderer, this.scene, 
+      this.camera.threeCamera, this.controls.threeControls,
+      stack);
+    
+    this.gui.load(this);
+    
+    
 
     // Start render which does not wait for model fully loaded
     this.render();
   }
 
   render() {
-    // Render rStats if Dev
-    if(Config.isDev && Config.isShowingStats) {
-      Stats.start();
-    }
 
     // Call render function and pass in created scene and camera
     this.renderer.render(this.scene, this.camera.threeCamera);
-
-    // rStats has finished determining render call now
-    if(Config.isDev && Config.isShowingStats) {
-      Stats.end();
-    }
 
     // Delta time is sometimes needed for certain updates
     //const delta = this.clock.getDelta();

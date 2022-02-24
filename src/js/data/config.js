@@ -15,8 +15,8 @@ export default {
   duration: 500,
   model: {
     selected: 0,
-    initialTypes: ['gltf', 'object'],
-    type: 'gltf'
+    initialTypes: ['box', 'cylinder'],
+    type: 'box'
   },
   models: [
     {
@@ -59,7 +59,7 @@ export default {
     posZ: 40
   },
   controls: {
-    autoRotate: true,
+    autoRotate: false,
     autoRotateSpeed: -0.5,
     rotateSpeed: 0.5,
     zoomSpeed: 0.8,

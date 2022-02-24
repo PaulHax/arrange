@@ -319,9 +319,9 @@ module.exports = function (THREE) {
 
     // Mouse buttons
     this.mouseButtons = {
-      ORBIT: THREE.MOUSE.LEFT,
+      ORBIT: THREE.MOUSE.RIGHT,
       ZOOM: THREE.MOUSE.MIDDLE,
-      PAN: THREE.MOUSE.RIGHT,
+      PAN: THREE.MOUSE.LEFT,
     };
 
     ////////////
